@@ -2,18 +2,25 @@
   "name": "@satyadeep-gohil/seekr",
   "version": "1.0.1",
   "description": "A fast, dependency-free JavaScript search utility for arrays, objects, strings, and more.",
-  "main": "index.js",
+  "main": "./index.cjs",
+  "module": "./index.mjs",
   "type": "module",
   "exports": {
-    ".": "./index.js"
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    }
   },
   "files": [
-    "index.js",
+    "index.mjs",
+    "index.cjs",
     "README.md",
     "LICENSE",
     "test.js"
   ],
   "scripts": {
+    "build": "node build.js",
+    "prepublishOnly": "npm run build",
     "test": "echo \"No test suite specified.\" && exit 0"
   },
   "keywords": [
