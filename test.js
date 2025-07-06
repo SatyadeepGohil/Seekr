@@ -1,4 +1,4 @@
-import Seekr from "./index.js";
+import Seekr from "./index.mjs";
 import { performance } from "perf_hooks";
 
 const gc = typeof global.gc === 'function' ? global.gc : undefined;
@@ -7,7 +7,7 @@ class PerformanceTester {
     constructor() {
         this.results = {};
         this.warmupRuns = 3;
-        this.testRuns = 15; // Increased for better statistical significance
+        this.testRuns = 100; // Increased for better statistical significance
         this.gcWaitTime = 100; // ms to wait after GC
     }
 
