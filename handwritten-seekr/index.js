@@ -13,14 +13,36 @@ const dataTypeNames = {
     set: 'set'
 };
 
+/**
+ * @typedef {Object} SearchOptions - Configuration options for different search modes.
+ * @property {'exact'} [mode] - Search mode, 'exact' performs identical matching against the data.
+ * @property {boolean} [caseSensitive=false] - Enable caseSensitive matching.
+ * @property {boolean} [deep=false] - Enables deep nested property matching. This is costly operation.
+ */
+
+/**
+ * A lightweight, Flexible search utility for Javascript data structures.
+ * @class
+ */
+
 class Seekr {
+    /**
+     * Creates a new instance of Seekr.
+     * @constructor
+     * @param {*} data - Any valid JavaScript data type to be used as searchable source.
+     */
     constructor (data){
         this.originalData = data;
         this.dataType = this.typeDetection(data);
     }
 
+    /**
+     * Detects the type of input data.
+     * @param {*} uncheckData - The data whose type needs to be determined.
+     * @returns {string} - A string representing the type of the input data.
+     */
     typeDetection (uncheckData) {
-        // undefined and null foremost because to not operate unnecessary operations, a performance optimization.
+        // undefined and null foremost because not to operate unnecessary operations, a early performance optimization as fast fail strategy.
         if (typeof uncheckData === 'undefined') return 'undefined';
         if (null === uncheckData) return 'null';
         if (typeof uncheckData === 'string') return 'string';
@@ -35,6 +57,14 @@ class Seekr {
         if (typeof uncheckData === 'bigint') return 'bigint';
     }
 
+    /**
+     * Searches through the data using specified criteria and delegets search reposibilites to specific methods according to type of given data.
+     * @param {*} query - The value to search for. Most modes expect a string, but primitives are allowed. 
+     * @param {string | null} [property] - Provide name to search within objects. Pass null to search values directly.
+     * @param {SearchOptions} [options]
+     * @returns {*} - Filtered data containing matching items or a item based on query, property and options.
+     * @throws {Error} When data type is null, undefined, or unsupported.
+     */
     search (query, property, options = {}) {
 
         if (query === '' || query === null || query === undefined) return [];
@@ -65,11 +95,18 @@ class Seekr {
         }
     }
 
+    /**
+     * 
+     * @param {*} query - Query is matched against the given array.
+     * @param {string | null} property - Provide a name to search through properties embeded inside the array. Give null to search through all properties within the array.
+     * @param {SearchOptions} [options] - Particular options choosen will affect the outcome.
+     * @returns {Array} - Array of matching items.
+     */
     searchArray (query, property, options) {
         const {mode, caseSensitive, deep} = options;
 
         return this.originalData.filter(item => {
-            if (property) {
+            if (property !== null) {
                 return this.compareProperty(item, property, query, {mode, caseSensitive, deep})
             } else {
                 return this.compareValue(item, query, {mode, caseSensitive});
