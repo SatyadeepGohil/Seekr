@@ -16,12 +16,12 @@ const dataTypeNames = {
 /**
  * @typedef {Object} SearchOptions - Configuration options for different search modes.
  * @property {'exact'} [mode] - Search mode, 'exact' performs identical matching against the data.
- * @property {boolean} [caseSensitive=false] - Enable caseSensitive matching.
- * @property {boolean} [deep=false] - Enables deep nested property matching. This is costly operation.
+ * @property {boolean} [caseSensitive=false] - Enable case-sensitive matching.
+ * @property {boolean} [deep=false] - Enable deep nested property matching. This is a costly operation.
  */
 
 /**
- * A lightweight, Flexible search utility for Javascript data structures.
+ * A lightweight, flexible search utility for JavaScript data structures.
  * @class
  */
 
@@ -58,7 +58,7 @@ class Seekr {
     }
 
     /**
-     * Searches through the data using specified criteria and delegets search reposibilites to specific methods according to type of given data.
+     * Searches through the data using specified criteria and delegates search responsibilities to specific methods according to type of given data.
      * @param {*} query - The value to search for. Most modes expect a string, but primitives are allowed. 
      * @param {string | null} [property] - Provide name to search within objects. Pass null to search values directly.
      * @param {SearchOptions} [options]
@@ -98,8 +98,8 @@ class Seekr {
     /**
      * 
      * @param {*} query - Query is matched against the given array.
-     * @param {string | null} property - Provide a name to search through properties embeded inside the array. Give null to search through all properties within the array.
-     * @param {SearchOptions} [options] - Particular options choosen will affect the outcome.
+     * @param {string | null} property - Provide a name to search within array. Pass null to search values directly.
+     * @param {SearchOptions} [options] - Search options that will affect the outcome.
      * @returns {Array} - Array of matching items.
      */
     searchArray (query, property, options) {
@@ -114,6 +114,14 @@ class Seekr {
         });
     }
 
+    /**
+     * A property comparison method that returns booleans when match is found, with deep object traversal functionality.
+     * @param {*} item - Provide items for proper comparison. it's required for property comparison.
+     * @param {string} property - Property name used for comparison. Required when deep option is enabled.
+     * @param {*} query - Give Query to be compare against given data.
+     * @param {SearchOptions} [options] 
+     * @returns {boolean} - Returns true when property matches, otherwise false.
+     */
     compareProperty (item, property, query, options) {
         const {deep} = options;
 
@@ -125,6 +133,13 @@ class Seekr {
         }
     }
 
+    /**
+     * A value comparison method.
+     * @param {*} value - Value for comparison against query.
+     * @param {*} query - Query for comparison against value.
+     * @param {SearchOptions} [options] 
+     * @returns {boolean} - Returns true for matches, false otherwise. Unsupported modes return false. Null and undefined return false.
+     */
     compareValue (value, query, options) {
         const {mode, caseSensitive} = options;
 
@@ -142,6 +157,12 @@ class Seekr {
         }
     }
 
+    /**
+     * Traverses nested object path to return value.
+     * @param {object} obj - Object to traverse.
+     * @param {string} path - Dot-notation path to traverse (e.g., 'user.profile.name').
+     * @returns {*} - Returns the nested value or undefined if path doesn't exist.
+     */
     getNestedValue (obj, path) {
         return path.split('.').reduce((current, key) => {
             return current && current[key] !== undefined ? current[key] : undefined;
