@@ -66,8 +66,10 @@ class Seekr {
      * @throws {Error} When data type is null, undefined, or unsupported.
      */
     search (query, property, options = {}) {
+        const {mode} = options;
 
-        if (query === '' || query === null || query === undefined) return [];
+        if (query === '') return [];
+        if (mode === '') options.mode = 'exact';
 
         switch (this.dataType) {
 
@@ -89,6 +91,8 @@ class Seekr {
 
             case dataTypeNames.array:
                 return this.searchArray(query, property, options);
+            case dataTypeNames.object:
+                return this.searchObject(query, property, options);
 
             default:
                 throw new Error(`Unsupported data type: ${this.dataType}`);
@@ -112,6 +116,25 @@ class Seekr {
                 return this.compareValue(item, query, {mode, caseSensitive});
             }
         });
+    }
+
+    searchObject (query, property, options) {
+        const results = [];
+
+        if (property !== null) {
+            //search specific property
+            if (this.compareProperty(this.originalData, property, query, options)) {
+                results.push(this.originalData);
+            } else {
+                // search all properties
+                for (const [key, value] of Object.entries(this.originalData)) {
+                    if (this.compareValue(value, query, options)) {
+                        results.push([key, value]);
+                    }
+                }
+            }
+        }
+        return results;
     }
 
     /**
@@ -166,6 +189,19 @@ class Seekr {
     getNestedValue (obj, path) {
         return path.split('.').reduce((current, key) => {
             return current && current[key] !== undefined ? current[key] : undefined;
-        })
+        }, obj)
     }
 }
+
+/* const data = {
+    user: {
+        profile: {
+            name: 'joe'
+        }
+    }
+};
+let path = 'user.profile.name'
+console.log(path.split('.'));
+console.log(path.split('.').reduce((current, key) => {
+    return current && current[key] !== undefined ? current[key] : undefined;
+}, data)) */
