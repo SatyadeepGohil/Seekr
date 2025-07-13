@@ -1,18 +1,3 @@
-const dataTypeNames = {
-    undefined: 'undefined',
-    null: 'null',
-    string: 'string',
-    boolean: 'boolean',
-    number: 'number',
-    array: 'array',
-    object: 'object',
-    symbol: 'symbol',
-    function: 'function',
-    bigint: 'bigint',
-    map: 'map',
-    set: 'set'
-};
-
 /**
  * @typedef {Object} SearchOptions - Configuration options for different search modes.
  * @property {'exact'} [mode] - Search mode, 'exact' performs identical matching against the data.
@@ -61,7 +46,7 @@ class Seekr {
      * Searches through the data using specified criteria and delegates search responsibilities to specific methods according to type of given data.
      * @param {*} query - The value to search for. Most modes expect a string, but primitives are allowed. 
      * @param {string | null} [property] - Provide name to search within objects. Pass null to search values directly.
-     * @param {SearchOptions} [options]
+     * @param {SearchOptions} [options] - Search options, choose one or default is exact.
      * @returns {*} - Filtered data containing matching items or a item based on query, property and options.
      * @throws {Error} When data type is null, undefined, or unsupported.
      */
@@ -73,7 +58,7 @@ class Seekr {
 
         switch (this.dataType) {
 
-            case dataTypeNames.null:
+            case 'null':
                 throw new Error(`
                     Seekr search method terminated.
                     Received data type: null
@@ -81,7 +66,7 @@ class Seekr {
                     Solution: Don't provide null as searching data.
                     `);
 
-            case dataTypeNames.undefined:
+            case 'undefined':
                 throw new Error(`
                     Seekr search method terminated.
                     Received data type: undefined
@@ -89,7 +74,7 @@ class Seekr {
                     Solution: Provide a JavaScript valid data type.
                     `);
 
-            case dataTypeNames.array:
+            case 'array':
                 return this.searchArray(query, property, options);
             case dataTypeNames.object:
                 return this.searchObject(query, property, options);
@@ -170,7 +155,7 @@ class Seekr {
 
         switch(mode) {
             case 'exact':
-                if (typeof value === dataTypeNames.string && typeof query === dataTypeNames.string) {
+                if (typeof value === 'string' && typeof query === 'string') {
                     return caseSensitive ? value === query : value.toLowerCase() === query.toLowerCase();
                 }
                 return value === query;
@@ -192,16 +177,3 @@ class Seekr {
         }, obj)
     }
 }
-
-/* const data = {
-    user: {
-        profile: {
-            name: 'joe'
-        }
-    }
-};
-let path = 'user.profile.name'
-console.log(path.split('.'));
-console.log(path.split('.').reduce((current, key) => {
-    return current && current[key] !== undefined ? current[key] : undefined;
-}, data)) */
